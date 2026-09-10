@@ -13,6 +13,8 @@ function Gameboard() {
 
 
   const getBoard = () => board;
+  const getRows = () => rows;
+  const getColumns = () => columns;
 
   
   const dropToken = (column, player) => {
@@ -64,6 +66,7 @@ function winGame (column, player) {
       playerTurnDiv.remove()
       const container = document.querySelector('.container1');
       const drawMsg = document.createElement('h1');
+      drawMsg.classList.add('winnerMsg');
       container.appendChild(drawMsg)
       drawMsg.textContent = `${winnerName} has won the game`;
       const divMsg = document.querySelector('.divMsg');
@@ -83,11 +86,11 @@ function winGame (column, player) {
        const winnerName = player === 2 ? "Player Two" : "Player One";
        won = true;
        playerTurnDiv.remove()
-      const drawMsg = document.createElement('h1');
       const container = document.querySelector('.container1');
+      const drawMsg = document.createElement('h1');
+      drawMsg.classList.add('winnerMsg');
+      container.appendChild(drawMsg)
       drawMsg.textContent = `${winnerName} has won the game`;
-      container.appendChild(drawMsg);
-
       const divMsg = document.querySelector('.divMsg');
       const gameoverMsg = document.createElement('h1');
       gameoverMsg.textContent = 'GameOver';
@@ -97,7 +100,7 @@ function winGame (column, player) {
 
       divMsg.appendChild(gameoverMsg);
       divMsg.appendChild(restartBtn);
-      playAgain()
+      playAgain()      
        //gameOver FUNCTION
      }
   
@@ -107,7 +110,8 @@ function winGame (column, player) {
       playerTurnDiv.remove()
       const drawMsg = document.createElement('h1');
       const container = document.querySelector('.container1');
-      drawMsg.textContent = 'It is a TIE!'
+      drawMsg.textContent = 'It is a TIE!';
+      drawMsg.classList.add('winnerMsg');
       container.appendChild(drawMsg);
 
       const divMsg = document.querySelector('.divMsg');
@@ -135,7 +139,7 @@ const getWon = () => {
     console.log(boardWithCellValues);
   };
 
-  return { getBoard, dropToken, printBoard, winGame, getWon };
+  return { getBoard, dropToken, printBoard, winGame, getWon, getRows, getColumns };
 }
 
 
@@ -293,15 +297,36 @@ function playAgain() {
     
     const restartBtn = document.querySelector('.restartBtn');
     const divMsg = document.querySelector('.divMsg');
+    const container = document.querySelector('.container1');
+    const winMsg = document.querySelector('.winnerMsg');
+    const boardScreen = document.querySelector('.board');
+
     const controller = Gameboard();
-    const board = controller.getBoard(); 
+    const board = controller.getBoard();
+    const rows = controller.getRows();
+    const columns = controller.getColumns();
     let bool = controller.getWon();
 
     restartBtn.addEventListener('click', () => {
-      // erase the restartDiv
+      
+      bool = false
+      boardScreen.remove();
       divMsg.remove()
-      // clean the board on the screen
-      console.log(controller)
-      //bool = false
-    })
+      winMsg.remove()
+
+      const div2Msg = document.createElement('div');
+      div2Msg.classList.add('divMsg');
+      container.appendChild(div2Msg);
+
+      const board2div = document.createElement('div');
+      board2div.classList.add('board');
+      container.appendChild(board2div);
+
+      const turnMsg = document.createElement('h1');
+      turnMsg.classList.add('turn');
+      div2Msg.appendChild(turnMsg);
+
+  ScreenController()
+  console.log(board)
+})
 }

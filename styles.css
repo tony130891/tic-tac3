@@ -1,0 +1,46 @@
+
+.board {
+  display: grid;
+  height: 170px;
+  width: 500px;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(6, 1fr);
+  border: 1px solid black;
+  gap: 2px;
+  padding: 2px;
+  background-color: yellow;
+}
+
+.cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 2rem;
+  border: 1px solid grey;
+  background: lightyellow;
+  cursor: pointer;
+}
+
+.container1 {
+  background-color: #14532D;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 95%;
+  gap: 15px;
+}
+
+.divMsg {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 50px;
+}
+
+.restartBtn {
+  padding: 10px;
+  cursor: pointer;
+}

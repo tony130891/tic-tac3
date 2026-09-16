@@ -13,8 +13,6 @@ function Gameboard() {
 
 
   const getBoard = () => board;
-  const getRows = () => rows;
-  const getColumns = () => columns;
  
   
   const dropToken = (rows, column, player) => {
@@ -129,7 +127,7 @@ const getWon = () => {
     console.log(boardWithCellValues);
   };
 
-  return { getBoard, dropToken, printBoard, winGame, getWon, getRows, getColumns };
+  return { getBoard, dropToken, printBoard, winGame, getWon};
 }
 
 
@@ -281,12 +279,16 @@ function ScreenController(playerOneName, playerTwoName) {
     playerTurnDiv.textContent = `${activePlayer.name}'s turn...`;
 
     // Render board squares
-    board.forEach((row) => {
-      row.forEach((cell, index) => {
+    board.forEach((row, indexR) => {
+      const cellButton = document.createElement("button");
+      cellButton.classList.add("cell");
+      cellButton.dataset.row = indexR;
+      row.forEach((cell, indexC) => {
+      const cellButton = document.createElement("button");
+      cellButton.classList.add("cell");
+      cellButton.dataset.row = indexR;
+      cellButton.dataset.column = indexC;
         // Anything clickable should be a button!!
-        const cellButton = document.createElement("button");
-        cellButton.classList.add("cell");
-        cellButton.dataset.column = index;
         cellButton.textContent = cell.getValue();
         if(cellButton.textContent == 'X') {cellButton.style.color = 'orange'};
         if(cellButton.textContent == 'O') {cellButton.style.color = 'blue'};
@@ -299,13 +301,15 @@ function ScreenController(playerOneName, playerTwoName) {
 
 
     const selectedColumn = e.target.dataset.column;
+    const selectedRow = e.target.dataset.row;
+    const selectedCell = e.target;
     const selected = e.target.textContent;
     
     if(selected !== '-') return;
     if(!selectedColumn) return;
 
-  
-    game.playRound(selectedColumn);
+
+    game.playRound(selectedRow, selectedColumn);
     updateScreen();
   }
 
@@ -325,9 +329,6 @@ function playAgain() {
     const boardScreen = document.querySelector('.board');
 
     const controller = Gameboard();
-    const board = controller.getBoard();
-    const rows = controller.getRows();
-    const columns = controller.getColumns();
     let bool = controller.getWon();
 
     restartBtn.addEventListener('click', () => {
@@ -350,3 +351,5 @@ function playAgain() {
 }
 
 Menu()
+
+// TOFIX WHEN TIE AND PLAYAGAIN, IT TIES 

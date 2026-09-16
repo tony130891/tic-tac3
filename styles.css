@@ -1,10 +1,9 @@
-
 .board {
   display: grid;
   height: 170px;
   width: 500px;
-  grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(6, 1fr);
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
   border: 1px solid black;
   gap: 2px;
   padding: 2px;
@@ -20,7 +19,7 @@
   border: 1px solid grey;
   background: lightyellow;
   cursor: pointer;
-}
+} 
 
 .container1 {
   background-color: #14532D;
@@ -34,6 +33,10 @@
   gap: 15px;
 }
 
+.boardHidden {
+  display: none;
+}
+
 .divMsg {
   display: flex;
   flex-direction: column;
@@ -43,4 +46,23 @@
 .restartBtn {
   padding: 10px;
   cursor: pointer;
+}
+
+.divBtn {
+  padding: 5px;
+  display: flex;
+  border-radius: 10px;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.divmenu {
+  display: flex;
+  flex-direction: column;
+  border: 2px solid black;
+  padding: 4px;
+}
+
+.divmenuHidden {
+  display: none;
 }

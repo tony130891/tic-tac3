@@ -1,6 +1,6 @@
 function Gameboard() {
-  const rows = 4;
-  const columns = 4;
+  const rows = 3;
+  const columns = 3;
   const board = [];
 
   
@@ -15,23 +15,13 @@ function Gameboard() {
   const getBoard = () => board;
   const getRows = () => rows;
   const getColumns = () => columns;
-
+ 
   
-  const dropToken = (column, player) => {
-
-    const availableCells = board
-      .filter((row) => row[column].getValue() === 0)
-      .map((row) => row[column]);
-
-      const columnsCells = board
-      .filter((row) => row[column].getValue() === 0);
-
-    if (availableCells.length === 0) return;
-    // Otherwise, I have a valid cell, the last one in the filtered array
-    const lowestRow = availableCells.length - 1;
-    board[lowestRow][column].addToken(player);
+  const dropToken = (rows, column, player) => {
+    //tira el token en el row de la columna de board
+    
+    board[rows][column].addToken(player);
   };
-
 
 
 let won = false;
@@ -40,19 +30,19 @@ const playerTurnDiv = document.querySelector(".turn");
 function winGame (column, player) {
   const columnValues = board.map((row) => row[column].getValue());
   const columnsCells = board
-      .filter((row) => row[column].getValue() === 0);
+      .filter((row) => row[column].getValue() === '-');
 
   const celltaken = board.map((row) =>
-      row.map((cell) => cell.getValue() !== 0))
+      row.map((cell) => cell.getValue() !== '-'))
 
    let streak1 = 0;
    let streak2 = 0;
 
    for (const val of columnValues) {
-     if (val === 1) {
+     if (val === 'O') {
        streak1++;
        streak2 = 0;
-     } else if (val === 2) {
+     } else if (val === 'X') {
        streak2++;
        streak1 = 0;
      } else {
@@ -60,8 +50,8 @@ function winGame (column, player) {
        streak2 = 0;
      }
 
-     if (streak1 === 4) {
-      const winnerName = player === 1 ? "Player One" : "Player Two";
+     if (streak1 === 3) {
+      const winnerName = player === 'O' ? "Player One" : "Player Two";
       won = true;
       playerTurnDiv.remove()
       const container = document.querySelector('.container1');
@@ -82,8 +72,8 @@ function winGame (column, player) {
       //gameOver FUNCTION
      }
 
-     if (streak2 === 4) {
-       const winnerName = player === 2 ? "Player Two" : "Player One";
+     if (streak2 === 3) {
+       const winnerName = player === 'X' ? "Player Two" : "Player One";
        won = true;
        playerTurnDiv.remove()
       const container = document.querySelector('.container1');
@@ -106,7 +96,7 @@ function winGame (column, player) {
   
     }
     let trutyVal = celltaken.every(row => row.every(val => val=== true));
-    if (trutyVal) {
+    if (trutyVal && streak1 !== 3 && streak2 !== 3) {
       playerTurnDiv.remove()
       const drawMsg = document.createElement('h1');
       const container = document.querySelector('.container1');
@@ -144,7 +134,7 @@ const getWon = () => {
 
 
 function Cell() {
-  let value = 0;
+  let value = '-';
 
  
   const addToken = (player) => {
@@ -170,28 +160,15 @@ function GameController(
   const players = [
     {
       name: playerOneName,
-      token: 1,
+      token: 'O',
     },
     {
       name: playerTwoName,
-      token: 2,
+      token: 'X',
     },
   ];
   
   let activePlayer = players[0];
-
-if(board.getWon() == false) {
-  players[0].name = prompt('enter your name please');
-    if(players[0].name == null || players[0].name == "") {
-      players[0].name = playerOneName;
-      activePlayer = players[0];
-  } else {
-    activePlayer = players[0];
-  }
-}
-
-
-
 
 
   const switchPlayerTurn = () => {
@@ -204,15 +181,15 @@ if(board.getWon() == false) {
     console.log(`${getActivePlayer().name}'s turn.`);
   };
 
-  const playRound = (column) => {
+  const playRound = (row, column) => {
     
     if(board.getWon() == true) {return}
 
     // Drop a token for the current player
     console.log(
-      `Dropping ${getActivePlayer().name}'s token into column ${column}...`
+      `Dropping ${getActivePlayer().name}'s token into column ${column} and ${row}`
     );
-    board.dropToken(column, getActivePlayer().token);
+    board.dropToken(row,column, getActivePlayer().token);
 
     if (board.winGame(column, getActivePlayer().token)) {
       return;
@@ -233,40 +210,90 @@ if(board.getWon() == false) {
     getActivePlayer,
     getboard: board.getBoard,
     gameWon: board.winner,
-
   };
 }
 
-function ScreenController() {
+function Menu() {
+  const container = document.querySelector('.container1');
+  const board = document.querySelector('.boardHidden');
 
-  const game = GameController();
+  const form = document.createElement("form");
+  const divMenu = document.createElement("div");
+  const title = document.createElement("h1");
+  const input1 = document.createElement("input");
+  const input2 = document.createElement("input");
+  const divBtn = document.createElement("button");
+  const submitBtn = document.createElement("button");
+  const cancelBtn = document.createElement("button");
+
+  divMenu.classList.add("divmenu");
+  input1.setAttribute("type", "text");
+  input1.setAttribute("placeholder", "Player One");
+  input1.classList.add("player1");
+  input1.style.display = "flex";
+  input2.setAttribute("type", "text");
+  input2.setAttribute("placeholder", "Player Two");
+  input2.classList.add("player2");
+  divBtn.classList.add("divBtn");
+
+  submitBtn.textContent = "Submit";
+  cancelBtn.textContent = "Cancel";
+
+  container.appendChild(divMenu);
+  divMenu.appendChild(form);
+  form.appendChild(title);
+  title.appendChild(input1);
+  title.appendChild(input2);
+  divMenu.appendChild(divBtn);
+  divBtn.appendChild(submitBtn);
+  divBtn.appendChild(cancelBtn);
+
+
+  submitBtn.addEventListener("click", () => {
+    //e.preventDefault();
+    board.classList.remove("boardHidden");
+    board.classList.add("board");
+    container.appendChild(board);
+    divMenu.remove();
+    const player1 = input1.value || "Player One";
+    const player2 = input2.value || "Player Two";
+    // input values variables to become turn's names
+    // try to export this value into Screen function
+   
+    ScreenController(player1, player2);
+  });
+}
+
+function ScreenController(playerOneName, playerTwoName) {
+  const game = GameController(playerOneName, playerTwoName);
   const playerTurnDiv = document.querySelector(".turn");
   const boardDiv = document.querySelector(".board");
-  const winner = Gameboard();
 
   const updateScreen = () => {
-
-  const board = game.getboard();
-  const activePlayer = game.getActivePlayer();
-  
+    // clear the board
     boardDiv.textContent = "";
-     playerTurnDiv.textContent = `${activePlayer.name}'s turn...`;
-    
 
-     board.forEach((row) => {
+    // get the newest version of the board and player turn
+    const board = game.getboard();
+    const activePlayer = game.getActivePlayer();
+
+    // Display player's turn
+    playerTurnDiv.textContent = `${activePlayer.name}'s turn...`;
+
+    // Render board squares
+    board.forEach((row) => {
       row.forEach((cell, index) => {
-        const cellButton =  document.createElement("button");
+        // Anything clickable should be a button!!
+        const cellButton = document.createElement("button");
         cellButton.classList.add("cell");
-        // Create a data attribute to identify the column
-        // This makes it easier to pass into our `playRound` function
         cellButton.dataset.column = index;
         cellButton.textContent = cell.getValue();
+        if(cellButton.textContent == 'X') {cellButton.style.color = 'orange'};
+        if(cellButton.textContent == 'O') {cellButton.style.color = 'blue'};
         boardDiv.appendChild(cellButton);
-      })
-     })
-  }
-
-
+      });
+    });
+  };
   
   function clickHandlerBoard(e){
 
@@ -274,7 +301,7 @@ function ScreenController() {
     const selectedColumn = e.target.dataset.column;
     const selected = e.target.textContent;
     
-    if(selected !== '0') return;
+    if(selected !== '-') return;
     if(!selectedColumn) return;
 
   
@@ -288,10 +315,6 @@ function ScreenController() {
 
   updateScreen();
 }
-
-ScreenController()
-//create a welcome page where the players can choose their name
-
 
 function playAgain() {
     
@@ -310,7 +333,8 @@ function playAgain() {
     restartBtn.addEventListener('click', () => {
       
       bool = false
-      boardScreen.remove();
+      //boardScreen.remove();
+      boardScreen.classList.toggle('boardHidden');
       divMsg.remove()
       winMsg.remove()
 
@@ -318,15 +342,11 @@ function playAgain() {
       div2Msg.classList.add('divMsg');
       container.appendChild(div2Msg);
 
-      const board2div = document.createElement('div');
-      board2div.classList.add('board');
-      container.appendChild(board2div);
-
       const turnMsg = document.createElement('h1');
       turnMsg.classList.add('turn');
       div2Msg.appendChild(turnMsg);
-
-  ScreenController()
-  console.log(board)
+  Menu()
 })
 }
+
+Menu()

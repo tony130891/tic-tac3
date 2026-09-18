@@ -16,7 +16,6 @@ function Gameboard() {
  
   
   const dropToken = (rows, column, player) => {
-    //tira el token en el row de la columna de board
     
     board[rows][column].addToken(player);
   };
@@ -25,33 +24,26 @@ function Gameboard() {
 let won = false;
 const playerTurnDiv = document.querySelector(".turn");
 
-function winGame (column, player) {
+function winGame (row, column, player) {
+  
+  const rowValues = board[row].map((cell) => cell.getValue())
   const columnValues = board.map((row) => row[column].getValue());
-  const columnsCells = board
-      .filter((row) => row[column].getValue() === '-');
 
-  const celltaken = board.map((row) =>
-      row.map((cell) => cell.getValue() !== '-'))
+  const diag1 = [board[0][0].getValue(), board[1][1].getValue(), board[2][2].getValue()];
+  const diag2 = [board[0][2].getValue(), board[1][1].getValue(), board[2][0].getValue()];
+  
 
-   let streak1 = 0;
-   let streak2 = 0;
+  const isHorizontalWin = rowValues.every((val) => val === player);
+  const isVerticalWin = columnValues.every((val) => val === player);
+  const isDiag1Win = diag1.every((val) => val === player);
+  const isDiag2Win = diag2.even ? diag2.every((val) => val === player) : diag2.every((val) => val === player);
 
-   for (const val of columnValues) {
-     if (val === 'O') {
-       streak1++;
-       streak2 = 0;
-     } else if (val === 'X') {
-       streak2++;
-       streak1 = 0;
-     } else {
-       streak1 = 0;
-       streak2 = 0;
-     }
 
-     if (streak1 === 3) {
+     if (isHorizontalWin || isVerticalWin || isDiag1Win || isDiag2Win) {
       const winnerName = player === 'O' ? "Player One" : "Player Two";
       won = true;
       playerTurnDiv.remove()
+
       const container = document.querySelector('.container1');
       const drawMsg = document.createElement('h1');
       drawMsg.classList.add('winnerMsg');
@@ -67,35 +59,15 @@ function winGame (column, player) {
       divMsg.appendChild(gameoverMsg);
       divMsg.appendChild(restartBtn);
       playAgain()      
+      return true
       //gameOver FUNCTION
      }
 
-     if (streak2 === 3) {
-       const winnerName = player === 'X' ? "Player Two" : "Player One";
-       won = true;
-       playerTurnDiv.remove()
-      const container = document.querySelector('.container1');
-      const drawMsg = document.createElement('h1');
-      drawMsg.classList.add('winnerMsg');
-      container.appendChild(drawMsg)
-      drawMsg.textContent = `${winnerName} has won the game`;
-      const divMsg = document.querySelector('.divMsg');
-      const gameoverMsg = document.createElement('h1');
-      gameoverMsg.textContent = 'GameOver';
-      const restartBtn = document.createElement('button');
-      restartBtn.classList.add('restartBtn');
-      restartBtn.textContent = 'Play Again';
-
-      divMsg.appendChild(gameoverMsg);
-      divMsg.appendChild(restartBtn);
-      playAgain()      
-       //gameOver FUNCTION
-     }
-  
-    }
-    let trutyVal = celltaken.every(row => row.every(val => val=== true));
-    if (trutyVal && streak1 !== 3 && streak2 !== 3) {
+     let isBoardFull = board.every((row) => row.every((cell) => cell.getValue() !== '-'));
+    if (isBoardFull && !won) {
+      won = true;
       playerTurnDiv.remove()
+
       const drawMsg = document.createElement('h1');
       const container = document.querySelector('.container1');
       drawMsg.textContent = 'It is a TIE!';
@@ -112,9 +84,13 @@ function winGame (column, player) {
       divMsg.appendChild(gameoverMsg);
       divMsg.appendChild(restartBtn);
       
+
       playAgain()
+      return true
     };
-};
+    return false
+}
+
 
 const getWon = () => {
     return won
@@ -176,7 +152,6 @@ function GameController(
 
   const printNewRound = () => {
     board.printBoard();
-    console.log(`${getActivePlayer().name}'s turn.`);
   };
 
   const playRound = (row, column) => {
@@ -184,12 +159,10 @@ function GameController(
     if(board.getWon() == true) {return}
 
     // Drop a token for the current player
-    console.log(
-      `Dropping ${getActivePlayer().name}'s token into column ${column} and ${row}`
-    );
+    
     board.dropToken(row,column, getActivePlayer().token);
 
-    if (board.winGame(column, getActivePlayer().token)) {
+    if (board.winGame(row, column, getActivePlayer().token)) {
       return;
     }
 
@@ -247,8 +220,8 @@ function Menu() {
   divBtn.appendChild(cancelBtn);
 
 
-  submitBtn.addEventListener("click", () => {
-    //e.preventDefault();
+  submitBtn.addEventListener("click", (e) => {
+    e.preventDefault();
     board.classList.remove("boardHidden");
     board.classList.add("board");
     container.appendChild(board);
@@ -352,4 +325,4 @@ function playAgain() {
 
 Menu()
 
-// TOFIX WHEN TIE AND PLAYAGAIN, IT TIES 
+// TOFIX vertical and diagonal wins
